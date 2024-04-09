@@ -5,3 +5,4 @@ scikit-learn
 matplotlib
 keras
 torch
+optuna
