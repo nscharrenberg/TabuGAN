@@ -1,0 +1,8 @@
+jupyter
+pandas
+numpy
+scikit-learn
+matplotlib
+keras
+torch
+optuna
