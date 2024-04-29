@@ -1,0 +1,70 @@
+diff --git a/env.py b/Env.py
+similarity index 96%
+rename from env.py
+rename to Env.py
+index 28df35a..4408231 100644
+--- a/env.py
++++ b/Env.py
+@@ -35,7 +35,8 @@ class ADEnv(gym.Env):
+         self.dataset=dataset
+         self.index_u=np.where(self.y==self.normal)[0]
+         self.index_a=np.where(self.y==self.anomaly)[0]
+-        self.index_n=np.where(self.y==2)[0]
++        #self.index_n=np.where(self.y==2)[0]
++        self.index_n = np.where(self.y==self.normal)[0]
+ 
+         # observation space:
+         self.observation_space=spaces.Discrete(self.m)
+diff --git a/main.py b/main.py
+index 383f6a6..3e3e504 100644
+--- a/main.py
++++ b/main.py
+@@ -6,13 +6,14 @@ import os
+ import pandas as pd
+ 
+ 
+-BASE_PATH = './data.nosync/preprocessed'
+-
+-subsets = {
+-    'UNSW-NB15' : ['Fuzzers','Analysis','Backdoors','DoS','Exploits','Generic','Reconnaissance'],
+-}
++#BASE_PATH = '#./data.nosync/preprocessed'
++BASE_PATH = '/content/'
++#subsets = {
++#    'UNSW-NB15' : ['Fuzzers','Analysis','Backdoors','DoS','Exploits','Generic','Reconnaissance'],
++#}
++subsets = {'income':['train_mod']}
+ datasets = subsets.keys()
+-TEST_NAME = 'test_for_all.csv'
++TEST_NAME = 'test_mod.csv'
+ VALIDATION_NAME = 'validation_for_all.csv'
+ LABEL_NORMAL = 0
+ LABEL_ANOMALY = 1
+@@ -40,7 +41,7 @@ for dataset in datasets:
+     test_set = pd.read_csv(test_path).values
+ 
+     for subset in subsets[dataset]:
+-        data_path = os.path.join(BASE_PATH, dataset, subset)+f'_{CONTAMINATION_RATE}_{NUM_ANOMALY_KNOWS}.csv'
++        data_path = os.path.join(BASE_PATH, dataset, subset)+f'.csv'
+         training_set = pd.read_csv(data_path).values
+ 
+         pr_auc_history = []
+@@ -60,15 +61,15 @@ for dataset in datasets:
+ 
+             dplan = DPLAN(
+                 env=env,
+-                validation_set=None,
++                #validation_set=None,
+                 test_set=test_set,
+                 destination_path=MODELS_PATH,
+-                c = c,
++                #c = c,
+                 double_dqn=False
+             )
+             dplan.fit(reset_nets = True)
+             dplan.show_results()
+-            roc,pr = dplan.model_performance(on_test_set=True)
++            roc,pr = dplan.model_performance()
+             print(f'Finished run {i} with pr: {pr} and auc-roc: {roc}...')
+             pr_auc_history.append(pr)
+             roc_auc_history.append(roc)
