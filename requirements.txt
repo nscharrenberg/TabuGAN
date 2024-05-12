@@ -6,3 +6,4 @@ matplotlib
 keras
 torch
 optuna
+pycaret
