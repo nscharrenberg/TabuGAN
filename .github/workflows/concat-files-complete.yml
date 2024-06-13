@@ -1,4 +1,4 @@
-name: Concatenate Files
+name: Concatenate Files and Upload Artifact
 
 on: 
   push:
@@ -20,3 +20,9 @@ jobs:
       run: |
         cd atention_models/tabular_gpt/model_weights/complete
         cat x* > model_complete.pth
+
+    - name: Upload concatenated file as artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: model_complete.pth
+        path: atention_models/tabular_gpt/model_weights/complete/model_complete.pth
