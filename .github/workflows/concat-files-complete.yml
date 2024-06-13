@@ -1,0 +1,22 @@
+name: Concatenate Files
+
+on: 
+  push:
+    branches: 
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  concatenate_files:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Concatenate files
+      run: |
+        cd atention_models/tabular_gpt/model_weights/complete
+        cat x* > model_complete.pth
