@@ -1,0 +1,28 @@
+name: Concatenate Files and Upload Artifact
+
+on: 
+  push:
+    branches: 
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  concatenate_files:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Concatenate files
+      run: |
+        cd atention_models/tabular_gpt/model_weights/complete
+        cat x* > model_complete.pth
+
+    - name: Upload concatenated file as artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: model_complete.pth
+        path: atention_models/tabular_gpt/model_weights/complete/model_complete.pth
