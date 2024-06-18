@@ -7,7 +7,7 @@ from utils.config import Config
 from utils.logging import log, LogLevel
 
 
-class AbstractPipeline(ABC):
+class AbstractTrainingPipeline(ABC):
     def __init__(self, config: Config):
         self.config = config
         self.verbose = config.get_nested("verbose", default=True)
@@ -33,7 +33,7 @@ class AbstractPipeline(ABC):
 
         Path(self.figure_dir).mkdir(parents=True, exist_ok=True)
 
-        self.loss_plot_path = f"{self.figure_dir}/{self.loss_plot_file}"
+        self.loss_plot_path = f"{self.figure_dir}/{self.loss_plot_file}.jpeg"
 
         self.sample_size = config.get_nested("sampling", "size", default=1000)
 

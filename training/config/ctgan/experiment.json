@@ -7,9 +7,9 @@
   },
   "model": {
     "name": "ctgan",
-    "load": false,
-    "train": true,
-    "save": true
+    "load": true,
+    "train": false,
+    "save": false
   },
   "gan": {
     "epochs": 10,

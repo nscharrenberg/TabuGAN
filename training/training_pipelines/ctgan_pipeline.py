@@ -2,14 +2,14 @@ from pathlib import Path
 
 from sdv.metadata import SingleTableMetadata
 
-from pipelines.abstract_pipeline import AbstractPipeline
+from training_pipelines.abstract_pipeline import AbstractTrainingPipeline
 from synthesizers.CTGAN import CTGANSynthesizer
 from utils.config import Config
 
 from utils.logging import log, LogLevel
 
 
-class CTGANPipeline(AbstractPipeline):
+class CTGANTrainingPipeline(AbstractTrainingPipeline):
     def __init__(self, config: Config):
         super().__init__(config)
 
@@ -36,7 +36,6 @@ class CTGANPipeline(AbstractPipeline):
             embedding_dim=self.config.get_nested("gan", "embedding_dim", default=128),
             log_frequency=self.config.get_nested("gan", "log_frequency", default=True),
             pac=self.config.get_nested("gan", "pac", default=10),
-
         )
 
         log(f"CTGAN is ready to train.", level=LogLevel.SUCCESS, verbose=self.verbose)
@@ -63,7 +62,7 @@ class CTGANPipeline(AbstractPipeline):
         log(f"Saving model to \"{self.model_path}\".", level=LogLevel.INFO, verbose=self.verbose)
         Path(self.model_dir).mkdir(parents=True, exist_ok=True)
         self.synthesizer.save(
-            filepath=self.model_path
+            filepath=self.model_path,
         )
         log(f"Successfully saved model.", level=LogLevel.SUCCESS, verbose=self.verbose)
 
@@ -78,13 +77,16 @@ class CTGANPipeline(AbstractPipeline):
             log(f"Model not found at \"{self.model_path}\".", level=LogLevel.ERROR, verbose=self.verbose)
             return
 
-        self.synthesizer.load(
+        self.synthesizer = self.synthesizer.load(
             filepath=self.model_path
         )
 
         log(f"Successfully loaded existing model.", level=LogLevel.SUCCESS, verbose=self.verbose)
 
     def get_loss_plot(self):
+        if not self.model_train:
+            return
+
         log(f"Generating loss plot.", level=LogLevel.INFO,
             verbose=self.verbose)
         Path(self.figure_dir).mkdir(parents=True, exist_ok=True)
