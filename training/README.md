@@ -16,6 +16,13 @@ Run the following command to train the model:
 python main.py execute --config config/ctgan/train.json
 ```
 
+## How to Run the Experiments Pipeline
+Run the following command to run the experiments:
+```bash
+python main.py experiment --config config/ctgan/experiment.json
+```
+
+
 where `config/ctgan/train.json` is the path to the configuration file for the model you want to train.
 
 ## How to Extend CTGAN with your own model
@@ -31,3 +38,10 @@ where `config/ctgan/train.json` is the path to the configuration file for the mo
 10. In `main.py`make sure to add the pipeline model.
 
 If you're adding a completely new model, you might have to add it to `pipeline_type.py` in `pipelines` and add it to the if-statement in the `main.py` file.
+
+
+## To Do
+1. Allow experiments to skip the GAN loading and training, and only utilizing the original data and synthetic data.
+2. Perform Statistical Tests using sdv metrics.
+3. Add integration for transformer GAN
+4. Add integration for VAE GAN.
