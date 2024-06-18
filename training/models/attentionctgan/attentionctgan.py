@@ -499,7 +499,7 @@ class AttentionCTGAN(BaseSynthesizer):
             vocab_length=self.vocabulary_length,
             transformer_blocks=self.transformer_blocks,
             device=self._device,
-        )
+        ).to(self._device)
         self._attention_model.load_state_dict(torch.load(self.transformer_model_path,map_location=self._device),strict=False)
         self._attention_model.eval()
 
@@ -507,7 +507,7 @@ class AttentionCTGAN(BaseSynthesizer):
         self._transformer.fit(train_data, discrete_columns)
 
         train_data = self._transformer.transform(train_data)
-        input_embedding = torch.tensor(self._transformer.get_input_embedding())
+        input_embedding = torch.tensor(self._transformer.get_input_embedding()).to(self._device)
 
         self._data_sampler = DataSampler(
             train_data,
@@ -518,7 +518,7 @@ class AttentionCTGAN(BaseSynthesizer):
 
         data_dim = self._transformer.output_dimensions
 
-        conditioning_augmentation = ConditioningAugmentation(self.transformer_embedding,self.conditioning_augmentation_dim)
+        self.conditioning_augmentation = ConditioningAugmentation(self.transformer_embedding,self.conditioning_augmentation_dim)
 
         self._generator = Generator(
             self._embedding_dim + self._data_sampler.dim_cond_vec(),
@@ -543,7 +543,7 @@ class AttentionCTGAN(BaseSynthesizer):
         )
 
         optimizerCA = optim.Adam(
-            conditioning_augmentation.parameters(), lr=self.conditioning_augmentation_lr,
+            self.conditioning_augmentation.parameters(), lr=self.conditioning_augmentation_lr,
             betas=(0.5, 0.9), weight_decay=self._discriminator_decay
         )
 
@@ -581,7 +581,7 @@ class AttentionCTGAN(BaseSynthesizer):
                         c2 = c1[perm]
                         with torch.no_grad():
                             output_embedding = self._attention_model.get_embedding(input_embedding)
-                            mean_ca,var_ca = conditioning_augmentation(output_embedding.cpu())
+                            mean_ca,var_ca = self.conditioning_augmentation(output_embedding.cpu())
                         mvn = MultivariateNormal(mean_ca, var_ca.unsqueeze(1)*torch.eye(self.conditioning_augmentation_dim))
                         sampled_embedding = mvn.sample().to(self._device)
                         fakez = torch.cat([fakez, sampled_embedding], dim=1)
@@ -620,10 +620,14 @@ class AttentionCTGAN(BaseSynthesizer):
                     c1, m1, col, opt = condvec
                     c1 = torch.from_numpy(c1).to(self._device)
                     m1 = torch.from_numpy(m1).to(self._device)
+                    perm = np.arange(self._batch_size)
+                    np.random.shuffle(perm)
+                    _,input_embedding = self._data_sampler.sample_data(
+                            train_data, self._batch_size, col[perm], opt[perm])
                     with torch.no_grad():
                         output_embedding = self._attention_model.get_embedding(input_embedding)
                     optimizerCA.zero_grad(set_to_none=False)
-                    mean_ca,var_ca = conditioning_augmentation(output_embedding.cpu())
+                    mean_ca,var_ca = self.conditioning_augmentation(output_embedding.cpu())
                     mvn = MultivariateNormal(mean_ca, var_ca.unsqueeze(1)*torch.eye(self.conditioning_augmentation_dim))
                     sampled_embedding = mvn.sample().to(self._device)
                     fakez = torch.cat([fakez, sampled_embedding], dim=1)
@@ -707,14 +711,20 @@ class AttentionCTGAN(BaseSynthesizer):
             if global_condition_vec is not None:
                 condvec = global_condition_vec.copy()
             else:
-                condvec = self._data_sampler.sample_original_condvec(self._batch_size)
+                condvec,input_embedding_batch = self._data_sampler.sample_original_condvec(self._batch_size)
 
-            if condvec is None:
+            if input_embedding_batch is None:
                 pass
             else:
-                c1 = condvec
-                c1 = torch.from_numpy(c1).to(self._device)
-                fakez = torch.cat([fakez, c1], dim=1)
+                #c1 = condvec
+                #c1 = torch.from_numpy(c1).to(self._device)
+                with torch.no_grad():
+                    output_embedding = self._attention_model.get_embedding(input_embedding_batch)
+                    mean_ca,var_ca = self.conditioning_augmentation(output_embedding.cpu())
+                    mvn = MultivariateNormal(mean_ca, var_ca.unsqueeze(1)*torch.eye(self.conditioning_augmentation_dim))
+                    sampled_embedding = mvn.sample().to(self._device)
+                fakez = torch.cat([fakez, sampled_embedding], dim=1)
+                #fakez = torch.cat([fakez, c1], dim=1)
 
             fake = self._generator(fakez)
             fakeact = self._apply_activate(fake)

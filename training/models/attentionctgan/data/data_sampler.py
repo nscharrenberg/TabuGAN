@@ -124,7 +124,7 @@ class DataSampler(object):
         cond = np.zeros((batch, self._n_categories), dtype='float32')
         cond[np.arange(batch), col_idxs] = 1
 
-        return cond
+        return cond,self.input_embedding[col_idxs]
 
     def sample_data(self, data, n, col, opt):
         """Sample data from original training data satisfying the sampled conditional vector.
