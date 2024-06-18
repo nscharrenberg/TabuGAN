@@ -1,5 +1,6 @@
 {
   "verbose": true,
+  "seed": 42,
   "sampling": {
     "size": 1000
   },
@@ -10,7 +11,7 @@
     "save": true
   },
   "gan": {
-    "epochs": 300,
+    "epochs": 10,
     "cuda": true,
     "batch_size": 500,
     "discriminator_dim": [256, 256],

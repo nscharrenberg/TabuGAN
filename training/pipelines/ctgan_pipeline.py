@@ -1,13 +1,13 @@
 from sdv.metadata import SingleTableMetadata
-from sdv.single_table import CTGANSynthesizer
 
-from models.AbstractGAN import AbstractGAN
+from pipelines.abstract_pipeline import AbstractPipeline
+from synthesizers.CTGAN import CTGANSynthesizer
 from utils.config import Config
 
 from utils.logging import log, LogLevel
 
 
-class CTGAN(AbstractGAN):
+class CTGANPipeline(AbstractPipeline):
     def __init__(self, config: Config):
         super().__init__(config)
 
@@ -34,6 +34,7 @@ class CTGAN(AbstractGAN):
             embedding_dim=self.config.get_nested("gan", "embedding_dim", default=128),
             log_frequency=self.config.get_nested("gan", "log_frequency", default=True),
             pac=self.config.get_nested("gan", "pac", default=10),
+
         )
 
         log(f"CTGAN is ready to train.", level=LogLevel.SUCCESS, verbose=self.verbose)

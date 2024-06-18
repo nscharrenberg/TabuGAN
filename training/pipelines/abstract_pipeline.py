@@ -7,7 +7,7 @@ from utils.config import Config
 from utils.logging import log, LogLevel
 
 
-class AbstractGAN(ABC):
+class AbstractPipeline(ABC):
     def __init__(self, config: Config):
         self.config = config
         self.verbose = config.get_nested("verbose", default=True)
