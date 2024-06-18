@@ -45,7 +45,7 @@ class AttentionCTGANPipeline(AbstractPipeline):
             conditioning_augmentation_lr = self.config.get_nested("transformer","conditioning_augmentation_lr", default=1e-3)
         )
 
-        log(f"CTGAN is ready to train.", level=LogLevel.SUCCESS, verbose=self.verbose)
+        log(f"Attention CTGAN is ready to train.", level=LogLevel.SUCCESS, verbose=self.verbose)
 
     def execute(self):
         self.load()
