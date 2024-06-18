@@ -1,0 +1,46 @@
+{
+  "verbose": true,
+  "sampling": {
+    "size": 1000
+  },
+  "model": {
+    "name": "ctgan",
+    "load": false,
+    "train": true,
+    "save": true
+  },
+  "gan": {
+    "epochs": 300,
+    "cuda": true,
+    "batch_size": 500,
+    "discriminator_dim": [256, 256],
+    "discriminator_lr": 2e-4,
+    "discriminator_decay": 1e-6,
+    "discriminator_steps": 1,
+    "generator_dim": [256, 256],
+    "generator_lr": 2e-4,
+    "generator_decay": 1e-6,
+    "embedding_dim": 128,
+    "log_frequency": true,
+    "pac": 10
+  },
+  "files": {
+    "datasets": {
+      "directory": "../datasets",
+      "name": "adult",
+      "encoding": "utf-8"
+    },
+    "output": {
+      "directory": "../experiments/ctgan/synthetic",
+      "name": "adult_1000_200epochs"
+    },
+    "model": {
+      "directory": "../experiments/ctgan/models",
+      "name": "adult_1000_200epochs"
+    },
+    "figures": {
+      "directory": "../experiments/ctgan/figures",
+      "loss_plot": "loss_plot.jpeg"
+    }
+  }
+}
