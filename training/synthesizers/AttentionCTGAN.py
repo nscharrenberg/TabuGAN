@@ -9,7 +9,7 @@ from sdv.errors import InvalidDataTypeError, NotFittedError
 from sdv.single_table.base import BaseSingleTableSynthesizer
 from sdv.single_table.utils import detect_discrete_columns
 
-from models.attentionctgan.attention_ctgan import AttentionCTGAN
+from models.attentionctgan.attentionctgan import AttentionCTGAN
 
 
 def _validate_no_category_dtype(data):
@@ -175,6 +175,7 @@ class AttentionCTGANSynthesizer(LossValuesMixin, BaseSingleTableSynthesizer):
         transformer_embedding=992,
         num_heads=31,
         transformer_blocks=2,
+        transformer_model_path = "transformer_model.pth",
         conditioning_augmentation_dim = 32,
         conditioning_augmentation_lr = 1e-3,
     ):
@@ -206,6 +207,7 @@ class AttentionCTGANSynthesizer(LossValuesMixin, BaseSingleTableSynthesizer):
         self.transformer_blocks = transformer_blocks
         self.conditioning_augmentation_dim = conditioning_augmentation_dim
         self.conditioning_augmentation_lr = conditioning_augmentation_lr
+        self.transformer_model_path = transformer_model_path
 
         self._model_kwargs = {
             'embedding_dim': embedding_dim,
@@ -228,7 +230,8 @@ class AttentionCTGANSynthesizer(LossValuesMixin, BaseSingleTableSynthesizer):
             'num_heads': num_heads,
             'transformer_blocks': transformer_blocks,
             "conditioning_augmentation_dim": conditioning_augmentation_dim,
-            "conditioning_augmentation_lr" : conditioning_augmentation_lr
+            "conditioning_augmentation_lr" : conditioning_augmentation_lr,
+            "transformer_model_path" : transformer_model_path,
         }
 
     def _estimate_num_columns(self, data):

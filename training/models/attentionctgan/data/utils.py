@@ -6,8 +6,8 @@ import einops
 
 import pickle
 
-from column_code import ColumnTokenizer, FloatTokenizer, CategoricalTokenizer
-from tabular_tokenizer import TabularTokenizer
+from models.attentionctgan.data.column_code import ColumnTokenizer, FloatTokenizer, CategoricalTokenizer
+from models.attentionctgan.data.tabular_tokenizer import TabularTokenizer
 
 
 # ┌─────────┐

@@ -1,7 +1,7 @@
 from sdv.metadata import SingleTableMetadata
 
 from pipelines.abstract_pipeline import AbstractPipeline
-from synthesizers.CTGAN import CTGANSynthesizer
+from synthesizers.AttentionCTGAN import AttentionCTGANSynthesizer
 from utils.config import Config
 
 from utils.logging import log, LogLevel
@@ -15,9 +15,9 @@ class AttentionCTGANPipeline(AbstractPipeline):
         self.metadata = SingleTableMetadata()
         self.metadata.detect_from_dataframe(self.data)
 
-        log(f"Setting Up CTGAN Synthesizer.", level=LogLevel.INFO, verbose=self.verbose)
+        log(f"Setting Up Attention CTGAN Synthesizer.", level=LogLevel.INFO, verbose=self.verbose)
 
-        self.synthesizer = CTGANSynthesizer(
+        self.synthesizer = AttentionCTGANSynthesizer(
             self.metadata,
             enforce_rounding=False,
             epochs=self.config.get_nested("gan", "epochs", default=300),
@@ -34,14 +34,14 @@ class AttentionCTGANPipeline(AbstractPipeline):
             embedding_dim=self.config.get_nested("gan", "embedding_dim", default=128),
             log_frequency=self.config.get_nested("gan", "log_frequency", default=True),
             pac=self.config.get_nested("gan", "pac", default=10),
-            vocabulary_length=self.config.get_nested("transformer","vocabulary_length", 21979),
-            context_window=self.config.get_nested("transformer","context_window", 38),
-            transformer_embedding=self.config.get_nested("transformer","embedding_dim", 992),
-            num_heads=self.config.get_nested("transformer","num_heads", 31),
-            transformer_blocks=self.config.get_nested("transformer","transformer_blocks", 2),
-            transformer_model_path = self.config.get_nested("transformer","model_path", "transformer_model.pth"),
-            conditioning_augmentation_dim = self.config.get_nested("transformer","conditioning_augmentation_dim", 32),
-            conditioning_augmentation_lr = self.config.get_nested("transformer","conditioning_augmentation_lr", 1e-3)
+            vocabulary_length=self.config.get_nested("transformer","vocabulary_length", default=21979),
+            context_window=self.config.get_nested("transformer","context_window", default=38),
+            transformer_embedding=self.config.get_nested("transformer","embedding_dim", default=992),
+            num_heads=self.config.get_nested("transformer","num_heads", default=31),
+            transformer_blocks=self.config.get_nested("transformer","transformer_blocks", default=2),
+            transformer_model_path = self.config.get_nested("transformer","model_path", default="transformer_model.pth"),
+            conditioning_augmentation_dim = self.config.get_nested("transformer","conditioning_augmentation_dim", default=32),
+            conditioning_augmentation_lr = self.config.get_nested("transformer","conditioning_augmentation_lr", default=1e-3)
         )
 
         log(f"CTGAN is ready to train.", level=LogLevel.SUCCESS, verbose=self.verbose)

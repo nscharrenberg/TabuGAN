@@ -7,7 +7,7 @@ import pandas as pd
 from joblib import Parallel, delayed
 from rdt.transformers import ClusterBasedNormalizer, OneHotEncoder
 
-from utils import tokenize_dataset , read_dataset
+from models.attentionctgan.data.utils import tokenize_dataset , read_dataset
 
 SpanInfo = namedtuple('SpanInfo', ['dim', 'activation_fn'])
 ColumnTransformInfo = namedtuple(
@@ -113,7 +113,7 @@ class DataTransformer(object):
             self.output_dimensions += column_transform_info.output_dimensions
             self._column_transform_info_list.append(column_transform_info)
 
-        _,_,self.transformer_input_embedding = tokenize_dataset(read_dataset(raw_data))
+        _,_,self.transformer_input_embedding = tokenize_dataset(read_dataset(raw_data.copy(deep=True)))
 
     def get_input_embedding(self):
         return self.transformer_input_embedding

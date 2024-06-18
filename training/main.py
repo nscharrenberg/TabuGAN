@@ -1,6 +1,7 @@
 import typer
 
 from pipelines.ctgan_pipeline import CTGANPipeline
+from pipelines.attention_ctgan_pipeline import AttentionCTGANPipeline
 from pipelines.pipeline_type import PipelineType
 from utils.config import Config
 from utils.logging import log, LogLevel
@@ -21,8 +22,7 @@ def cli_run(config: str = typer.Option("../configs/baseline.json", help="Path to
     if selected_model.lower() == PipelineType.CTGAN.value.lower():
         pipeline = CTGANPipeline(_config)
     elif selected_model.lower() == PipelineType.TRANSFORMER_GAN.value.lower():
-        log(f"APipeline for model \"{selected_model}\" not supported.", LogLevel.ERROR, verbose=verbose)
-        return
+        pipeline = AttentionCTGANPipeline(_config)
     elif selected_model.lower() == PipelineType.VAE_GAN.value.lower():
         log(f"APipeline for model \"{selected_model}\" not supported.", LogLevel.ERROR, verbose=verbose)
         return
