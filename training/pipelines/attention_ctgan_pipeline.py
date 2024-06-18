@@ -37,7 +37,7 @@ class AttentionCTGANPipeline(AbstractPipeline):
             pac=self.config.get_nested("gan", "pac", default=10),
             vocabulary_length=self.config.get_nested("transformer","vocabulary_length", default=21979),
             context_window=self.config.get_nested("transformer","context_window", default=38),
-            transformer_embedding=self.config.get_nested("transformer","embedding_dim", default=992),
+            transformer_embedding_length=self.config.get_nested("transformer","embedding_dim", default=992),
             num_heads=self.config.get_nested("transformer","num_heads", default=31),
             transformer_blocks=self.config.get_nested("transformer","transformer_blocks", default=2),
             transformer_model_path = self.config.get_nested("transformer","model_path", default="transformer_model.pth"),

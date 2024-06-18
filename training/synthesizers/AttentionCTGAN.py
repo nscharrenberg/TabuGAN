@@ -173,7 +173,7 @@ class AttentionCTGANSynthesizer(LossValuesMixin, BaseSingleTableSynthesizer):
         cuda=True,
         vocabulary_length=21979,
         context_window=38,
-        transformer_embedding=992,
+        transformer_embedding_length=992,
         num_heads=31,
         transformer_blocks=2,
         transformer_model_path = "transformer_model.pth",
@@ -203,7 +203,7 @@ class AttentionCTGANSynthesizer(LossValuesMixin, BaseSingleTableSynthesizer):
         self.cuda = cuda
         self.vocabulary_length = vocabulary_length
         self.context_window = context_window
-        self.transformer_embedding = transformer_embedding
+        self.transformer_embedding_length = transformer_embedding_length
         self.num_heads = num_heads
         self.transformer_blocks = transformer_blocks
         self.conditioning_augmentation_dim = conditioning_augmentation_dim
@@ -229,7 +229,7 @@ class AttentionCTGANSynthesizer(LossValuesMixin, BaseSingleTableSynthesizer):
             'cuda': cuda,
             'vocabulary_length': vocabulary_length,
             'context_window': context_window,
-            'transformer_embedding': transformer_embedding,
+            'transformer_embedding_length': transformer_embedding_length,
             'num_heads': num_heads,
             'transformer_blocks': transformer_blocks,
             'conditioning_augmentation_dim': conditioning_augmentation_dim,
