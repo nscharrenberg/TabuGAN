@@ -25,4 +25,4 @@ class CaretModel:
         self.experiment.plot_model(self.model, plot="ks", save=model_experiment_dir)
         self.experiment.plot_model(self.model, plot="pr", save=model_experiment_dir)
         self.experiment.plot_model(self.model, plot="error", save=model_experiment_dir)
-        self.experiment.get_leaderboard().to_csv(f"{model_experiment_dir}/leaderboard.csv", index=False)
+        self.experiment.get_leaderboard().to_csv(f"{model_experiment_dir}/summary.csv", index=False)
