@@ -31,6 +31,7 @@ class AttentionCTGANPipeline(AbstractPipeline):
             generator_dim=self.config.get_nested("gan", "generator_dim", default=(256, 256)),
             generator_lr=self.config.get_nested("gan", "generator_lr", default=2e-4),
             generator_decay=self.config.get_nested("gan", "generator_decay", default=1e-6),
+            enable_generator_attention=self.config.get_nested("gan", "enable_attention", default=False),
             embedding_dim=self.config.get_nested("gan", "embedding_dim", default=128),
             log_frequency=self.config.get_nested("gan", "log_frequency", default=True),
             pac=self.config.get_nested("gan", "pac", default=10),

@@ -33,7 +33,8 @@
     "generator_decay": 1e-6,
     "embedding_dim": 128,
     "log_frequency": true,
-    "pac": 10
+    "pac": 10,
+    "enable_attention": false
   },
   "files": {
     "datasets": {

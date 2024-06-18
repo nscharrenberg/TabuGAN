@@ -215,6 +215,27 @@ class Residual(Module):
         return torch.cat([out, input_], dim=1)
 
 
+class GeneratorWithAttention(Module):
+    """Generator with Attention for the CTGAN."""
+
+    def __init__(self, embedding_dim, generator_dim, data_dim,transformer_embedding):
+        super(Generator, self).__init__()
+        dim = list(generator_dim)
+        self.net1 = Residual(embedding_dim, dim[0])
+        self.mapper = Linear(transformer_embedding, dim[0])
+        self.net2 = Sequential(
+            Residual(dim[0]*2, dim[1]),
+            Linear(dim[1], data_dim),
+        )
+
+    def forward(self, input_,embedding):
+        """Apply the Generator to the `input_`."""
+        data = self.net1(input_)
+        translated_embedding = self.mapper(embedding)
+        attention = functional.softmax(translated_embedding*data,dim=1)
+        x = torch.concat((data,attention),dim=1)
+        return self.net2(x)
+
 class Generator(Module):
     """Generator for the CTGAN."""
 
@@ -283,7 +304,7 @@ class AttentionCTGAN(BaseSynthesizer):
                     Length of the vocabulary for the transformer. Defaults to 21979.
                 context_window (int):
                     Size of the context window for the transformer. Defaults to 38.
-                transformer_embedding (int):
+                transformer_embedding_length (int):
                     Size of the embedding layer in the transformer. Defaults to 992.
                 num_heads (int):
                     Number of attention heads in the transformer. Defaults to 31.
@@ -292,16 +313,17 @@ class AttentionCTGAN(BaseSynthesizer):
     """
 
     def __init__(self, embedding_dim=128, generator_dim=(256, 256), discriminator_dim=(256, 256),
-                 generator_lr=2e-4, generator_decay=1e-6, discriminator_lr=2e-4,
-                 discriminator_decay=1e-6, batch_size=500, discriminator_steps=1,
+                 generator_lr=2e-4, generator_decay=1e-6, enable_generator_attention= False,
+                 discriminator_lr=2e-4, discriminator_decay=1e-6, batch_size=500, discriminator_steps=1,
                  log_frequency=True, verbose=False, epochs=300, pac=10, cuda=True,
-                 vocabulary_length=21979, context_window=38, transformer_embedding=992,
+                 vocabulary_length=21979, context_window=38, transformer_embedding_length=992,
                  num_heads=31, transformer_blocks=2,transformer_model_path = "transformer_model.pth",
                  conditioning_augmentation_dim = 32, conditioning_augmentation_lr = 1e-3):
         assert batch_size % 2 == 0
         self._embedding_dim = embedding_dim
         self._generator_dim = generator_dim
         self._discriminator_dim = discriminator_dim
+        self.enable_generator_attention = enable_generator_attention
 
         self._generator_lr = generator_lr
         self._generator_decay = generator_decay
@@ -332,7 +354,7 @@ class AttentionCTGAN(BaseSynthesizer):
 
         self.vocabulary_length = vocabulary_length
         self.context_window = context_window
-        self.transformer_embedding = transformer_embedding
+        self.transformer_embedding_length = transformer_embedding_length
         self.num_heads = num_heads
         self.transformer_blocks = transformer_blocks
         self.transformer_model_path = transformer_model_path
@@ -494,7 +516,7 @@ class AttentionCTGAN(BaseSynthesizer):
             )
         self._attention_model = Transformer(
             context_window=self.context_window,
-            n_embed=self.transformer_embedding,
+            n_embed=self.transformer_embedding_length,
             n_heads=self.num_heads,
             vocab_length=self.vocabulary_length,
             transformer_blocks=self.transformer_blocks,
@@ -518,13 +540,21 @@ class AttentionCTGAN(BaseSynthesizer):
 
         data_dim = self._transformer.output_dimensions
 
-        self.conditioning_augmentation = ConditioningAugmentation(self.transformer_embedding,self.conditioning_augmentation_dim)
+        self.conditioning_augmentation = ConditioningAugmentation(self.transformer_embedding_length,self.conditioning_augmentation_dim)
 
-        self._generator = Generator(
-            self._embedding_dim + self._data_sampler.dim_cond_vec(),
-            self._generator_dim,
-            data_dim
-        ).to(self._device)
+        if self.enable_generator_attention:
+            self._generator = GeneratorWithAttention(
+                self._embedding_dim + self.conditioning_augmentation_dim,
+                self._generator_dim,
+                data_dim,
+                self.transformer_embedding_length
+            ).to(self._device)
+        else:
+            self._generator = Generator(
+                self._embedding_dim + self._data_sampler.dim_cond_vec(),
+                self._generator_dim,
+                data_dim
+            ).to(self._device)
 
         discriminator = Discriminator(
             data_dim + self._data_sampler.dim_cond_vec(),
@@ -587,7 +617,10 @@ class AttentionCTGAN(BaseSynthesizer):
                         fakez = torch.cat([fakez, sampled_embedding], dim=1)
                         c2_ = sampled_embedding[perm]
 
-                    fake = self._generator(fakez)
+                    if self.enable_generator_attention:
+                        fake = self._generator(fakez,output_embedding)
+                    else:
+                        fake = self._generator(fakez)
                     fakeact = self._apply_activate(fake)
 
                     real = torch.from_numpy(real.astype('float32')).to(self._device)
@@ -632,7 +665,10 @@ class AttentionCTGAN(BaseSynthesizer):
                     sampled_embedding = mvn.sample().to(self._device)
                     fakez = torch.cat([fakez, sampled_embedding], dim=1)
 
-                fake = self._generator(fakez)
+                if self.enable_generator_attention:
+                    fake = self._generator(fakez,output_embedding)
+                else:
+                    fake = self._generator(fakez)
                 fakeact = self._apply_activate(fake)
 
                 if c1 is not None:
@@ -726,7 +762,10 @@ class AttentionCTGAN(BaseSynthesizer):
                 fakez = torch.cat([fakez, sampled_embedding], dim=1)
                 #fakez = torch.cat([fakez, c1], dim=1)
 
-            fake = self._generator(fakez)
+            if self.enable_generator_attention:
+                fake = self._generator(fakez,output_embedding)
+            else:
+                fake = self._generator(fakez)
             fakeact = self._apply_activate(fake)
             data.append(fakeact.detach().cpu().numpy())
 

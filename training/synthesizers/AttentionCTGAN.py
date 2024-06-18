@@ -161,6 +161,7 @@ class AttentionCTGANSynthesizer(LossValuesMixin, BaseSingleTableSynthesizer):
         discriminator_dim=(256, 256),
         generator_lr=2e-4,
         generator_decay=1e-6,
+        enable_generator_attention=False,
         discriminator_lr=2e-4,
         discriminator_decay=1e-6,
         batch_size=500,
@@ -208,6 +209,7 @@ class AttentionCTGANSynthesizer(LossValuesMixin, BaseSingleTableSynthesizer):
         self.conditioning_augmentation_dim = conditioning_augmentation_dim
         self.conditioning_augmentation_lr = conditioning_augmentation_lr
         self.transformer_model_path = transformer_model_path
+        self.enable_generator_attention = enable_generator_attention
 
         self._model_kwargs = {
             'embedding_dim': embedding_dim,
@@ -215,6 +217,7 @@ class AttentionCTGANSynthesizer(LossValuesMixin, BaseSingleTableSynthesizer):
             'discriminator_dim': discriminator_dim,
             'generator_lr': generator_lr,
             'generator_decay': generator_decay,
+            'enable_generator_attention': enable_generator_attention,
             'discriminator_lr': discriminator_lr,
             'discriminator_decay': discriminator_decay,
             'batch_size': batch_size,
@@ -229,9 +232,9 @@ class AttentionCTGANSynthesizer(LossValuesMixin, BaseSingleTableSynthesizer):
             'transformer_embedding': transformer_embedding,
             'num_heads': num_heads,
             'transformer_blocks': transformer_blocks,
-            "conditioning_augmentation_dim": conditioning_augmentation_dim,
-            "conditioning_augmentation_lr" : conditioning_augmentation_lr,
-            "transformer_model_path" : transformer_model_path,
+            'conditioning_augmentation_dim': conditioning_augmentation_dim,
+            'conditioning_augmentation_lr' : conditioning_augmentation_lr,
+            'transformer_model_path' : transformer_model_path,
         }
 
     def _estimate_num_columns(self, data):
