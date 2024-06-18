@@ -1,3 +1,5 @@
+from pathlib import Path
+
 from sdv.metadata import SingleTableMetadata
 
 from pipelines.abstract_pipeline import AbstractPipeline
@@ -59,6 +61,7 @@ class CTGANPipeline(AbstractPipeline):
             return
 
         log(f"Saving model to \"{self.model_path}\".", level=LogLevel.INFO, verbose=self.verbose)
+        Path(self.model_dir).mkdir(parents=True, exist_ok=True)
         self.synthesizer.save(
             filepath=self.model_path
         )
@@ -71,6 +74,10 @@ class CTGANPipeline(AbstractPipeline):
 
         log(f"Loading existing model from \"{self.model_path}\".", level=LogLevel.INFO, verbose=self.verbose)
 
+        if not Path(self.model_path).exists():
+            log(f"Model not found at \"{self.model_path}\".", level=LogLevel.ERROR, verbose=self.verbose)
+            return
+
         self.synthesizer.load(
             filepath=self.model_path
         )
@@ -80,7 +87,7 @@ class CTGANPipeline(AbstractPipeline):
     def get_loss_plot(self):
         log(f"Generating loss plot.", level=LogLevel.INFO,
             verbose=self.verbose)
-
+        Path(self.figure_dir).mkdir(parents=True, exist_ok=True)
         fig = self.synthesizer.get_loss_values_plot()
 
         log(f"saving loss plot it to \"{self.loss_plot_path}\".", level=LogLevel.INFO,
@@ -90,6 +97,7 @@ class CTGANPipeline(AbstractPipeline):
 
     def sample(self):
         log(f"Generating Synthetic Data to \"{self.output_path}\".", level=LogLevel.INFO, verbose=self.verbose)
+        Path(self.output_dir).mkdir(parents=True, exist_ok=True)
         synthetic_data = self.synthesizer.sample(self.sample_size)
         synthetic_data.to_csv(self.output_path, index=False)
         log(f"Successfully saved the synthetic data.", level=LogLevel.SUCCESS, verbose=self.verbose)
