@@ -219,13 +219,13 @@ class GeneratorWithAttention(Module):
     """Generator with Attention for the CTGAN."""
 
     def __init__(self, embedding_dim, generator_dim, data_dim,transformer_embedding):
-        super(Generator, self).__init__()
+        super(GeneratorWithAttention, self).__init__()
         dim = list(generator_dim)
-        self.net1 = Residual(embedding_dim, dim[0])
+        self.net1 = Linear(embedding_dim, dim[0])
         self.mapper = Linear(transformer_embedding, dim[0])
         self.net2 = Sequential(
             Residual(dim[0]*2, dim[1]),
-            Linear(dim[1], data_dim),
+            Linear(dim[0]*2+dim[1], data_dim),
         )
 
     def forward(self, input_,embedding):
