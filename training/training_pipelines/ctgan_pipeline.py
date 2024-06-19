@@ -1,13 +1,15 @@
+from pathlib import Path
+
 from sdv.metadata import SingleTableMetadata
 
-from pipelines.abstract_pipeline import AbstractPipeline
-from synthesizers.AttentionCTGAN import AttentionCTGANSynthesizer
+from training_pipelines.abstract_pipeline import AbstractTrainingPipeline
+from synthesizers.CTGAN import CTGANSynthesizer
 from utils.config import Config
 
 from utils.logging import log, LogLevel
 
 
-class AttentionCTGANPipeline(AbstractPipeline):
+class CTGANTrainingPipeline(AbstractTrainingPipeline):
     def __init__(self, config: Config):
         super().__init__(config)
 
@@ -15,9 +17,9 @@ class AttentionCTGANPipeline(AbstractPipeline):
         self.metadata = SingleTableMetadata()
         self.metadata.detect_from_dataframe(self.data)
 
-        log(f"Setting Up Attention CTGAN Synthesizer.", level=LogLevel.INFO, verbose=self.verbose)
+        log(f"Setting Up CTGAN Synthesizer.", level=LogLevel.INFO, verbose=self.verbose)
 
-        self.synthesizer = AttentionCTGANSynthesizer(
+        self.synthesizer = CTGANSynthesizer(
             self.metadata,
             enforce_rounding=False,
             epochs=self.config.get_nested("gan", "epochs", default=300),
@@ -31,22 +33,12 @@ class AttentionCTGANPipeline(AbstractPipeline):
             generator_dim=self.config.get_nested("gan", "generator_dim", default=(256, 256)),
             generator_lr=self.config.get_nested("gan", "generator_lr", default=2e-4),
             generator_decay=self.config.get_nested("gan", "generator_decay", default=1e-6),
-            enable_generator_attention=self.config.get_nested("gan", "enable_attention", default=False),
             embedding_dim=self.config.get_nested("gan", "embedding_dim", default=128),
             log_frequency=self.config.get_nested("gan", "log_frequency", default=True),
             pac=self.config.get_nested("gan", "pac", default=10),
-            vocabulary_length=self.config.get_nested("transformer","vocabulary_length", default=21979),
-            context_window=self.config.get_nested("transformer","context_window", default=38),
-            transformer_embedding_length=self.config.get_nested("transformer","embedding_dim", default=992),
-            num_heads=self.config.get_nested("transformer","num_heads", default=31),
-            transformer_blocks=self.config.get_nested("transformer","transformer_blocks", default=2),
-            transformer_model_path = self.config.get_nested("transformer","model_path", default="transformer_model.pth"),
-            conditioning_augmentation_dim = self.config.get_nested("transformer","conditioning_augmentation_dim", default=32),
-            conditioning_augmentation_lr = self.config.get_nested("transformer","conditioning_augmentation_lr", default=1e-3),
-            enable_conditioning_augmentation = self.config.get_nested("transformer","enable_conditioning_augmentation", default=True),
         )
 
-        log(f"Attention CTGAN is ready to train.", level=LogLevel.SUCCESS, verbose=self.verbose)
+        log(f"CTGAN is ready to train.", level=LogLevel.SUCCESS, verbose=self.verbose)
 
     def execute(self):
         self.load()
@@ -68,8 +60,9 @@ class AttentionCTGANPipeline(AbstractPipeline):
             return
 
         log(f"Saving model to \"{self.model_path}\".", level=LogLevel.INFO, verbose=self.verbose)
+        Path(self.model_dir).mkdir(parents=True, exist_ok=True)
         self.synthesizer.save(
-            filepath=self.model_path
+            filepath=self.model_path,
         )
         log(f"Successfully saved model.", level=LogLevel.SUCCESS, verbose=self.verbose)
 
@@ -80,16 +73,23 @@ class AttentionCTGANPipeline(AbstractPipeline):
 
         log(f"Loading existing model from \"{self.model_path}\".", level=LogLevel.INFO, verbose=self.verbose)
 
-        self.synthesizer.load(
+        if not Path(self.model_path).exists():
+            log(f"Model not found at \"{self.model_path}\".", level=LogLevel.ERROR, verbose=self.verbose)
+            return
+
+        self.synthesizer = self.synthesizer.load(
             filepath=self.model_path
         )
 
         log(f"Successfully loaded existing model.", level=LogLevel.SUCCESS, verbose=self.verbose)
 
     def get_loss_plot(self):
+        if not self.model_train:
+            return
+
         log(f"Generating loss plot.", level=LogLevel.INFO,
             verbose=self.verbose)
-
+        Path(self.figure_dir).mkdir(parents=True, exist_ok=True)
         fig = self.synthesizer.get_loss_values_plot()
 
         log(f"saving loss plot it to \"{self.loss_plot_path}\".", level=LogLevel.INFO,
@@ -99,6 +99,7 @@ class AttentionCTGANPipeline(AbstractPipeline):
 
     def sample(self):
         log(f"Generating Synthetic Data to \"{self.output_path}\".", level=LogLevel.INFO, verbose=self.verbose)
+        Path(self.output_dir).mkdir(parents=True, exist_ok=True)
         synthetic_data = self.synthesizer.sample(self.sample_size)
         synthetic_data.to_csv(self.output_path, index=False)
         log(f"Successfully saved the synthetic data.", level=LogLevel.SUCCESS, verbose=self.verbose)
