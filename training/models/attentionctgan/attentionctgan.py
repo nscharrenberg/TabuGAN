@@ -609,10 +609,11 @@ class AttentionCTGAN(BaseSynthesizer):
                         np.random.shuffle(perm)
                         real,input_embedding = self._data_sampler.sample_data(
                             train_data, self._batch_size, col[perm], opt[perm])
-                        
+
+                        with torch.no_grad():
+                            output_embedding = self._attention_model.get_embedding(input_embedding)
                         if self.enable_conditioning_augmentation:
                             with torch.no_grad():
-                                output_embedding = self._attention_model.get_embedding(input_embedding)
                                 mean_ca,var_ca = self.conditioning_augmentation(output_embedding.cpu())
                             mvn = MultivariateNormal(mean_ca, var_ca.unsqueeze(1)*torch.eye(self.conditioning_augmentation_dim))
                             sampled_embedding = mvn.sample().to(self._device)
@@ -660,11 +661,14 @@ class AttentionCTGAN(BaseSynthesizer):
                     m1 = torch.from_numpy(m1).to(self._device)
                     perm = np.arange(self._batch_size)
                     np.random.shuffle(perm)
+                    _, input_embedding = self._data_sampler.sample_data(
+                        train_data, self._batch_size, col[perm], opt[perm]
+                    )
+                    with torch.no_grad():
+                        output_embedding = self._attention_model.get_embedding(
+                            input_embedding
+                        )
                     if self.enable_conditioning_augmentation:
-                        _,input_embedding = self._data_sampler.sample_data(
-                                train_data, self._batch_size, col[perm], opt[perm])
-                        with torch.no_grad():
-                            output_embedding = self._attention_model.get_embedding(input_embedding)
                         optimizerCA.zero_grad(set_to_none=False)
                         mean_ca,var_ca = self.conditioning_augmentation(output_embedding.cpu())
                         mvn = MultivariateNormal(mean_ca, var_ca.unsqueeze(1)*torch.eye(self.conditioning_augmentation_dim))
@@ -760,9 +764,9 @@ class AttentionCTGAN(BaseSynthesizer):
             if input_embedding_batch is None or condvec is None:
                 pass
             else:
+                with torch.no_grad():
+                    output_embedding = self._attention_model.get_embedding(input_embedding_batch)
                 if self.enable_conditioning_augmentation:
-                    with torch.no_grad():
-                        output_embedding = self._attention_model.get_embedding(input_embedding_batch)
                     mean_ca,var_ca = self.conditioning_augmentation(output_embedding.cpu())
                     mvn = MultivariateNormal(mean_ca, var_ca.unsqueeze(1)*torch.eye(self.conditioning_augmentation_dim))
                     sampled_embedding = mvn.sample().to(self._device)
