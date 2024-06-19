@@ -633,7 +633,10 @@ class AttentionCTGAN(BaseSynthesizer):
                     real = torch.from_numpy(real.astype('float32')).to(self._device)
 
                     if c1 is not None:
-                        fake_cat = torch.cat([fakeact, sampled_embedding], dim=1)
+                        if self.enable_conditioning_augmentation:
+                            fake_cat = torch.cat([fakeact, sampled_embedding], dim=1)
+                        else:
+                            fake_cat = torch.cat([fakeact, c1], dim=1)
                         real_cat = torch.cat([real, c2], dim=1)
                     else:
                         real_cat = real
@@ -685,7 +688,10 @@ class AttentionCTGAN(BaseSynthesizer):
                 fakeact = self._apply_activate(fake)
 
                 if c1 is not None:
-                    y_fake = discriminator(torch.cat([fakeact, sampled_embedding], dim=1))
+                    if self.enable_conditioning_augmentation:
+                        y_fake = discriminator(torch.cat([fakeact, sampled_embedding], dim=1))
+                    else:
+                        y_fake = discriminator(torch.cat([fakeact, c1], dim=1))
                 else:
                     y_fake = discriminator(fakeact)
 
@@ -694,9 +700,11 @@ class AttentionCTGAN(BaseSynthesizer):
                 else:
                     cross_entropy = self._cond_loss(fake, c1, m1)
 
-                loss_kldivergence = kl_divergence(mvn,MultivariateNormal(torch.zeros(self.conditioning_augmentation_dim), torch.eye(self.conditioning_augmentation_dim))).mean()
+                
                 loss_g = -torch.mean(y_fake) + cross_entropy
-                loss_g += loss_kldivergence
+                if self.enable_conditioning_augmentation:
+                    loss_kldivergence = kl_divergence(mvn,MultivariateNormal(torch.zeros(self.conditioning_augmentation_dim), torch.eye(self.conditioning_augmentation_dim))).mean()
+                    loss_g += loss_kldivergence
 
                 optimizerG.zero_grad(set_to_none=False)
                 loss_g.backward()
