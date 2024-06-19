@@ -42,7 +42,8 @@ class AttentionCTGANPipeline(AbstractPipeline):
             transformer_blocks=self.config.get_nested("transformer","transformer_blocks", default=2),
             transformer_model_path = self.config.get_nested("transformer","model_path", default="transformer_model.pth"),
             conditioning_augmentation_dim = self.config.get_nested("transformer","conditioning_augmentation_dim", default=32),
-            conditioning_augmentation_lr = self.config.get_nested("transformer","conditioning_augmentation_lr", default=1e-3)
+            conditioning_augmentation_lr = self.config.get_nested("transformer","conditioning_augmentation_lr", default=1e-3),
+            enable_conditioning_augmentation = self.config.get_nested("transformer","enable_conditioning_augmentation", default=True),
         )
 
         log(f"Attention CTGAN is ready to train.", level=LogLevel.SUCCESS, verbose=self.verbose)

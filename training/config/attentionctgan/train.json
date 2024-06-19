@@ -18,7 +18,8 @@
     "transformer_blocks": 2,
     "conditioning_augmentation_dim": 32,
     "conditioning_augmentation_lr": 1e-2,
-    "model_path": "../models/attention_model.pth"
+    "model_path": "../models/attention_model.pth",
+    "enable_conditioning_augmentation": true
   },
   "gan": {
     "epochs": 10,

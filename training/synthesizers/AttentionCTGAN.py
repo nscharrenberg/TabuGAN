@@ -179,6 +179,7 @@ class AttentionCTGANSynthesizer(LossValuesMixin, BaseSingleTableSynthesizer):
         transformer_model_path = "transformer_model.pth",
         conditioning_augmentation_dim = 32,
         conditioning_augmentation_lr = 1e-3,
+        enable_conditioning_augmentation = True
     ):
         super().__init__(
             metadata=metadata,
@@ -235,6 +236,7 @@ class AttentionCTGANSynthesizer(LossValuesMixin, BaseSingleTableSynthesizer):
             'conditioning_augmentation_dim': conditioning_augmentation_dim,
             'conditioning_augmentation_lr' : conditioning_augmentation_lr,
             'transformer_model_path' : transformer_model_path,
+            'enable_conditioning_augmentation' : enable_conditioning_augmentation
         }
 
     def _estimate_num_columns(self, data):
