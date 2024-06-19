@@ -1,0 +1,62 @@
+{
+  "verbose": true,
+  "seed": 42,
+  "sampling": {
+    "size": 32560
+  },
+  "model": {
+    "name": "transformer",
+    "load": false,
+    "train": true,
+    "save": true
+  },
+  "transformer": {
+    "vocabulary_length": 21979,
+    "context_window": 38,
+    "embedding_dim": 992,
+    "num_heads": 31,
+    "transformer_blocks": 2,
+    "conditioning_augmentation_dim": 32,
+    "conditioning_augmentation_lr": 1e-2,
+    "model_path": "../models/attention_model.pth",
+    "enable_conditioning_augmentation": true
+  },
+  "gan": {
+    "epochs": 10,
+    "cuda": true,
+    "batch_size": 500,
+    "discriminator_dim": [256, 256],
+    "discriminator_lr": 2e-4,
+    "discriminator_decay": 1e-6,
+    "discriminator_steps": 1,
+    "generator_dim": [256, 256],
+    "generator_lr": 2e-4,
+    "generator_decay": 1e-6,
+    "embedding_dim": 128,
+    "log_frequency": true,
+    "pac": 10,
+    "enable_attention": false
+  },
+  "files": {
+    "datasets": {
+      "directory": "../datasets",
+      "name": "adult",
+      "encoding": "utf-8",
+      "target": "income"
+    },
+    "output": {
+      "directory": "../experiments/attentionctgan/synthetic",
+      "name": "adult_1000_200epochs"
+    },
+    "model": {
+      "directory": "../experiments/attentionctgan/models",
+      "name": "adult_1000_200epochs"
+    },
+    "figures": {
+      "directory": "../experiments/attentionctgan/figures",
+      "loss_plot": "loss_plot",
+      "confusion_matrix": "confusion_matrix",
+      "experiment_summary": "experiment_summary"
+    }
+  }
+}

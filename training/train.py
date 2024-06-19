@@ -1,4 +1,5 @@
 from training_pipelines.ctgan_pipeline import CTGANTrainingPipeline
+from training_pipelines.attention_ctgan_pipeline import AttentionCTGANPipeline
 from training_pipelines.pipeline_type import PipelineType
 from utils.config import Config
 from utils.logging import LogLevel, log
@@ -16,8 +17,7 @@ def train(config: str):
     if selected_model.lower() == PipelineType.CTGAN.value.lower():
         pipeline = CTGANTrainingPipeline(_config)
     elif selected_model.lower() == PipelineType.TRANSFORMER_GAN.value.lower():
-        log(f"APipeline for model \"{selected_model}\" not supported.", LogLevel.ERROR, verbose=verbose)
-        return
+        pipeline = AttentionCTGANPipeline(_config)
     elif selected_model.lower() == PipelineType.VAE_GAN.value.lower():
         log(f"APipeline for model \"{selected_model}\" not supported.", LogLevel.ERROR, verbose=verbose)
         return
