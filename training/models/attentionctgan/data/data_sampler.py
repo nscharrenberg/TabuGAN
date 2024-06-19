@@ -6,7 +6,7 @@ import numpy as np
 class DataSampler(object):
     """DataSampler samples the conditional vector and corresponding data for CTGAN."""
 
-    def __init__(self, data, input_embedding, output_info, log_frequency,output_ca_embedding_dim):
+    def __init__(self, data, input_embedding, output_info, log_frequency,output_ca_embedding_dim,isenabled_ca):
         self._data_length = len(data)
 
         def is_discrete_column(column_info):
@@ -78,6 +78,7 @@ class DataSampler(object):
                 st += sum([span_info.dim for span_info in column_info])
         self.input_embedding = input_embedding
         self.output_ca_embedding_dim = output_ca_embedding_dim
+        self.isenabled_ca = isenabled_ca
 
     def _random_choice_prob_index(self, discrete_column_id):
         probs = self._discrete_column_category_prob[discrete_column_id]
@@ -148,7 +149,9 @@ class DataSampler(object):
 
     def dim_cond_vec(self):
         """Return the total number of categories."""
-        return self.output_ca_embedding_dim
+        if self.isenabled_ca:
+            return self.output_ca_embedding_dim
+        return self._n_categories
 
     def generate_cond_from_condition_column_info(self, condition_info, batch):
         """Generate the condition vector."""

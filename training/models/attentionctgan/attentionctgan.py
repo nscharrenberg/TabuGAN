@@ -537,7 +537,8 @@ class AttentionCTGAN(BaseSynthesizer):
             input_embedding,
             self._transformer.output_info_list,
             self._log_frequency,
-            self.conditioning_augmentation_dim)
+            self.conditioning_augmentation_dim,
+            self.enable_conditioning_augmentation)
 
         data_dim = self._transformer.output_dimensions
 
@@ -545,7 +546,7 @@ class AttentionCTGAN(BaseSynthesizer):
 
         if self.enable_generator_attention:
             self._generator = GeneratorWithAttention(
-                self._embedding_dim + self.conditioning_augmentation_dim,
+                self._embedding_dim + self._data_sampler.dim_cond_vec(),
                 self._generator_dim,
                 data_dim,
                 self.transformer_embedding_length
