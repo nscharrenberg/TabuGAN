@@ -1,3 +1,4 @@
+from pathlib import Path
 from sdv.metadata import SingleTableMetadata
 
 from training_pipelines.abstract_pipeline import AbstractTrainingPipeline
