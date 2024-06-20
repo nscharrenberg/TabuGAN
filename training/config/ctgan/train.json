@@ -2,7 +2,7 @@
   "verbose": true,
   "seed": 42,
   "sampling": {
-    "size": 32560,
+    "size": 11162,
     "test_size": 0.2
   },
   "model": {
@@ -29,20 +29,20 @@
   "files": {
     "datasets": {
       "directory": "../datasets",
-      "name": "adult",
+      "name": "bank",
       "encoding": "utf-8",
-      "target": "income"
+      "target": "deposit"
     },
     "output": {
-      "directory": "../experiments/ctgan/500epochs/synthetic",
+      "directory": "../experiments/ctgan/bank_500epochs/synthetic",
       "name": "adult"
     },
     "model": {
-      "directory": "../experiments/ctgan/500epochs/models",
+      "directory": "../experiments/ctgan/bank_500epochs/models",
       "name": "adult"
     },
     "figures": {
-      "directory": "../experiments/ctgan/500epochs/figures",
+      "directory": "../experiments/ctgan/bank_500epochs/figures",
       "loss_plot": "loss_plot",
       "confusion_matrix": "confusion_matrix",
       "experiment_summary": "experiment_summary"
