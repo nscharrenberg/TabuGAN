@@ -13,16 +13,16 @@
   "transformer": {
     "vocabulary_length": 21979,
     "context_window": 38,
-    "embedding_dim": 992,
-    "num_heads": 31,
+    "embedding_dim": 512,
+    "num_heads": 32,
     "transformer_blocks": 2,
     "conditioning_augmentation_dim": 32,
     "conditioning_augmentation_lr": 1e-2,
-    "model_path": "../models/attention_model.pth",
-    "enable_conditioning_augmentation": true
+    "model_path": "../models/model_weights512.pt",
+    "enable_conditioning_augmentation": false
   },
   "gan": {
-    "epochs": 10,
+    "epochs": 500,
     "cuda": true,
     "batch_size": 500,
     "discriminator_dim": [256, 256],
@@ -35,7 +35,7 @@
     "embedding_dim": 128,
     "log_frequency": true,
     "pac": 10,
-    "enable_attention": false
+    "enable_attention": true
   },
   "files": {
     "datasets": {
