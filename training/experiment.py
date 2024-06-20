@@ -2,6 +2,7 @@ from pathlib import Path
 
 import pandas as pd
 from sdv.datasets.local import load_csvs
+from sklearn.model_selection import train_test_split
 
 from machine_learning.caret_model import CaretModel
 from train import train
@@ -14,23 +15,29 @@ def experiment(config: str):
 
     verbose = _config.get_nested("verbose")
     seed = _config.get_nested("seed", default=42)
+    test_size = _config.get_nested("sampling", "test_size", default=0.2)
 
     pipeline = train(config)
 
     original_data = pipeline.data
+
     synthetic_data = load_synthetic_data(_config)
     target_name = _config.get_nested("files", "datasets", "target")
 
     experiment_dir = _config.get_nested("files", "figures", "directory")
 
-    run_model_experiment("lr", original_data, target_name, experiment_dir, appendix="baseline")
-    run_model_experiment("lr", original_data, target_name, experiment_dir, appendix="ctgan", test_data=synthetic_data)
+    # run_model_experiment("lr", original_data, target_name, experiment_dir, appendix="original", test_data=original_data)
+    run_model_experiment("lr", original_data, target_name, experiment_dir, appendix="ctgan",
+                         test_data=synthetic_data, seed=seed)
 
-    run_model_experiment("dt", original_data, target_name, experiment_dir, appendix="baseline")
-    run_model_experiment("dt", original_data, target_name, experiment_dir, appendix="ctgan", test_data=synthetic_data)
+    # run_model_experiment("dt", original_data, target_name, experiment_dir, appendix="original", test_data=original_data)
+    run_model_experiment("dt", original_data, target_name, experiment_dir, appendix="ctgan",
+                         test_data=synthetic_data, seed=seed)
 
-    run_model_experiment("xgboost", original_data, target_name, experiment_dir, appendix="baseline")
-    run_model_experiment("xgboost", original_data, target_name, experiment_dir, appendix="ctgan", test_data=synthetic_data)
+    # run_model_experiment("xgboost", original_data, target_name, experiment_dir, appendix="original",
+    #                      test_data=original_data)
+    run_model_experiment("xgboost", original_data, target_name, experiment_dir, appendix="ctgan",
+                         test_data=synthetic_data, seed=seed)
 
 
 def load_synthetic_data(config: Config):
@@ -52,9 +59,9 @@ def load_synthetic_data(config: Config):
     return datasets[file_name]
 
 
-def run_model_experiment(model:str, data: pd.DataFrame, target_class: str, experiment_dir: str, test_data: pd.DataFrame = None, appendix: str = ""):
+def run_model_experiment(model: str, data: pd.DataFrame, target_class: str, experiment_dir: str, test_data: pd.DataFrame = None, appendix: str = "", seed: int = 42):
     log(f"Running Logistic Regression model on data with target class \"{target_class}\".", level=LogLevel.INFO)
-    lr_model = CaretModel(data, target_class, model, test_data=test_data, appendix=appendix)
+    lr_model = CaretModel(data, target_class, model, test_data=test_data, appendix=appendix, random_state=seed)
 
     log("Saving plots...", level=LogLevel.INFO)
     lr_model.save(experiment_dir)

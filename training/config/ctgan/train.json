@@ -12,7 +12,7 @@
     "save": true
   },
   "gan": {
-    "epochs": 10,
+    "epochs": 500,
     "cuda": true,
     "batch_size": 500,
     "discriminator_dim": [256, 256],
@@ -34,15 +34,15 @@
       "target": "income"
     },
     "output": {
-      "directory": "../experiments/ctgan/synthetic",
-      "name": "adult_1000_200epochs"
+      "directory": "../experiments/ctgan/500epochs/synthetic",
+      "name": "adult"
     },
     "model": {
-      "directory": "../experiments/ctgan/models",
-      "name": "adult_1000_200epochs"
+      "directory": "../experiments/ctgan/500epochs/models",
+      "name": "adult"
     },
     "figures": {
-      "directory": "../experiments/ctgan/figures",
+      "directory": "../experiments/ctgan/500epochs/figures",
       "loss_plot": "loss_plot",
       "confusion_matrix": "confusion_matrix",
       "experiment_summary": "experiment_summary"
