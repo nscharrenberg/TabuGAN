@@ -1,0 +1,62 @@
+{
+  "verbose": true,
+  "seed": 42,
+  "sampling": {
+    "size": 11162,
+    "test_size": 0.2
+  },
+  "model": {
+    "name": "transformer",
+    "load": false,
+    "train": true,
+    "save": true
+  },
+  "transformer": {
+    "vocabulary_length": 5881,
+    "context_window": 21,
+    "embedding_dim": 512,
+    "num_heads": 32,
+    "transformer_blocks": 2,
+    "conditioning_augmentation_dim": 32,
+    "conditioning_augmentation_lr": 1e-2,
+    "model_path": "../models/model_weights_bank512.pt",
+    "enable_conditioning_augmentation": false
+  },
+  "gan": {
+    "epochs": 500,
+    "cuda": true,
+    "batch_size": 500,
+    "discriminator_dim": [256, 256],
+    "discriminator_lr": 2e-4,
+    "discriminator_decay": 1e-6,
+    "discriminator_steps": 1,
+    "generator_dim": [256, 256],
+    "generator_lr": 2e-4,
+    "generator_decay": 1e-6,
+    "embedding_dim": 128,
+    "log_frequency": true,
+    "pac": 10
+  },
+  "files": {
+    "datasets": {
+      "directory": "../datasets",
+      "name": "bank",
+      "encoding": "utf-8",
+      "target": "deposit"
+    },
+    "output": {
+      "directory": "../experiments/attentionctgan/bank_500epochs/synthetic",
+      "name": "bank"
+    },
+    "model": {
+      "directory": "../experiments/attentionctgan/bank_500epochs/models",
+      "name": "bank"
+    },
+    "figures": {
+      "directory": "../experiments/attentionctgan/bank_500epochs/figures",
+      "loss_plot": "loss_plot",
+      "confusion_matrix": "confusion_matrix",
+      "experiment_summary": "experiment_summary"
+    }
+  }
+}
