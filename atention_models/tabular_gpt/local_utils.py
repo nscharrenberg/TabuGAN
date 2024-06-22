@@ -38,14 +38,16 @@ def read_dataset(df: pd.DataFrame, rename: bool = True) -> pd.DataFrame:
     Adds <start> and <end> token in the DataFrame
     """
     df.insert(0, "start", "<start>")
+    df.insert(0, "blank", "<blank>")
     df["end"] = "<end>"
     if rename:
         df = rename_income_dataset(df)
     return df
 
 
-def tokenize_dataset(df):
+def tokenize_dataset(df,float_transform="yeo-johnson"):
     new_msg = """
+    Available Float Quantization method (multi-token) : yeo-johnson , quantile , log , robust
     _______________________________ 
     / Tokenizing your dataset       \\
     \     > This might take a while /
@@ -79,7 +81,7 @@ def tokenize_dataset(df):
         start_id = beg if cc is None else cc.end_id
         if column in FLOAT_COLS:
             cc = FloatTokenizer(
-                column, df[[column]], start_id, transform="log")
+                column, df[[column]], start_id, transform=float_transform)
         else:
             cc = CategoricalTokenizer(column, df[column], start_id)
         column_codes.register(column, cc)
@@ -104,8 +106,6 @@ def tokenize_dataset(df):
 
 
 def decoder(seq, df, column_codes):
-    assert len(
-        seq) == 38, "Incorrect number of seq length should be 38. See encoded docs"
 
     columns = [col for col in df.columns if col not in EXCLUDED_COLS]
     sample_encoded_row = seq
