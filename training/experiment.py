@@ -2,7 +2,6 @@ from pathlib import Path
 
 import pandas as pd
 from sdv.datasets.local import load_csvs
-from sklearn.model_selection import train_test_split
 
 from machine_learning.caret_model import CaretModel
 from train import train
@@ -15,11 +14,23 @@ def experiment(config: str):
 
     verbose = _config.get_nested("verbose")
     seed = _config.get_nested("seed", default=42)
-    test_size = _config.get_nested("sampling", "test_size", default=0.2)
 
-    pipeline = train(config)
+    experiment_only = _config.get_nested("experiment_only", default=False)
 
-    original_data = pipeline.data
+    if not experiment_only:
+        pipeline = train(config)
+
+        original_data = pipeline.data
+    else:
+        dataset_dir = _config.get_nested("files", "datasets", "directory")
+        dataset_name = _config.get_nested("files", "datasets", "name")
+        dataset_path = f"{dataset_dir}/{dataset_name}.csv"
+
+        if not Path(dataset_path).exists():
+            log(f"Dataset path {dataset_path} does not exist", LogLevel.ERROR)
+            return
+
+        original_data = pd.read_csv(dataset_path)
 
     synthetic_data = load_synthetic_data(_config)
     target_name = _config.get_nested("files", "datasets", "target")

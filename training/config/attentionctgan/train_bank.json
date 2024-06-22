@@ -1,6 +1,7 @@
 {
   "verbose": true,
   "seed": 42,
+  "experiment_only": false,
   "sampling": {
     "size": 11162,
     "test_size": 0.2

@@ -21,9 +21,9 @@ Run the following command to run the experiments:
 ```bash
 python main.py experiment --config config/ctgan/experiment.json
 ```
-
-
 where `config/ctgan/train.json` is the path to the configuration file for the model you want to train.
+
+**Note**: If you already have generated data, and only want to test that, make sure to set `experiment_only` to `true`.
 
 ## How to Extend CTGAN with your own model
 1. Copy and paste the ctgan directory in the models directory and rename it to your model name e.g. `transformerGAN`.
