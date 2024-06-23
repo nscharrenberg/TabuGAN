@@ -1,0 +1,53 @@
+{
+  "verbose": true,
+  "seed": 42,
+  "experiment_only": true,
+  "use_original_as_test": true,
+  "sampling": {
+    "size": 11162,
+    "test_size": 0.2
+  },
+  "model": {
+    "name": "ctgan",
+    "load": true,
+    "train": false,
+    "save": false
+  },
+  "gan": {
+    "epochs": 10,
+    "cuda": true,
+    "batch_size": 500,
+    "discriminator_dim": [256, 256],
+    "discriminator_lr": 2e-4,
+    "discriminator_decay": 1e-6,
+    "discriminator_steps": 1,
+    "generator_dim": [256, 256],
+    "generator_lr": 2e-4,
+    "generator_decay": 1e-6,
+    "embedding_dim": 128,
+    "log_frequency": true,
+    "pac": 10
+  },
+  "files": {
+    "datasets": {
+      "directory": "../datasets",
+      "name": "bank",
+      "encoding": "utf-8",
+      "target": "deposit"
+    },
+    "output": {
+      "directory": "../datasets",
+      "name": "bank"
+    },
+    "model": {
+      "directory": "../experiments/real/models",
+      "name": "bank"
+    },
+    "figures": {
+      "directory": "../experiments/real/bank/figures",
+      "loss_plot": "loss_plot",
+      "confusion_matrix": "confusion_matrix",
+      "experiment_summary": "experiment_summary"
+    }
+  }
+}
