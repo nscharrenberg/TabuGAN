@@ -13,7 +13,7 @@ class CaretModel:
         self.model_name = model
         self.experiment_appendix = appendix
 
-        self.experiment.setup(self.data, target=self.target_class, session_id=random_state, test_data=test_data,
+        self.experiment.setup(data=self.data, target=self.target_class, session_id=random_state, test_data=test_data,
                               index=False)
         self.model = self.experiment.create_model(model)
 

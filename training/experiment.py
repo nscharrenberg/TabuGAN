@@ -16,6 +16,7 @@ def experiment(config: str):
     seed = _config.get_nested("seed", default=42)
 
     experiment_only = _config.get_nested("experiment_only", default=False)
+    use_original_as_test = _config.get_nested("use_original_as_test", default=False)
 
     if not experiment_only:
         pipeline = train(config)
@@ -32,7 +33,10 @@ def experiment(config: str):
 
         original_data = pd.read_csv(dataset_path)
 
-    synthetic_data = load_synthetic_data(_config)
+    if not use_original_as_test:
+        synthetic_data = load_synthetic_data(_config)
+    else:
+        synthetic_data = None
     target_name = _config.get_nested("files", "datasets", "target")
 
     experiment_dir = _config.get_nested("files", "figures", "directory")

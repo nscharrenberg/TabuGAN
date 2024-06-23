@@ -1,8 +1,8 @@
 {
   "verbose": true,
   "seed": 42,
-  "experiment_only": false,
-  "use_original_as_test": false,
+  "experiment_only": true,
+  "use_original_as_test": true,
   "sampling": {
     "size": 32560,
     "test_size": 0.2
@@ -14,7 +14,7 @@
     "save": false
   },
   "gan": {
-    "epochs": 500,
+    "epochs": 10,
     "cuda": true,
     "batch_size": 500,
     "discriminator_dim": [256, 256],
@@ -36,15 +36,15 @@
       "target": "income"
     },
     "output": {
-      "directory": "../experiments/ctgan/500epochs/synthetic2",
+      "directory": "../datasets",
       "name": "adult"
     },
     "model": {
-      "directory": "../experiments/ctgan/500epochs/models",
-      "name": "adult"
+      "directory": "../experiments/real/models",
+      "name": "adult_1000_200epochs"
     },
     "figures": {
-      "directory": "../experiments/ctgan/500epochs/figures",
+      "directory": "../experiments/real/figures",
       "loss_plot": "loss_plot",
       "confusion_matrix": "confusion_matrix",
       "experiment_summary": "experiment_summary"

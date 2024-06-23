@@ -5,13 +5,12 @@ Extreme Gradient Boosting,"Pipeline(memory=Memory(location=None),
                                                transformer=LabelEncoder())),
                 ('numerical_imputer',
                  TransformerWrapper(exclude=None,
-                                    include=['age', 'balance', 'day',
-                                             'duration', 'campaign', 'pdays',
-                                             'previous'],
+                                    include=['age', 'fnlwgt', 'education.num',
+                                             'capital.gain', 'capital.loss',
+                                             'hours.per.week'],
                                     transformer=SimpleImputer(add_indicator=False,
                                                               copy=True,
-                                                              fill_value=None,
-                                                              keep...
+                                                              fill_...
                                importance_type=None,
                                interaction_constraints=None, learning_rate=None,
                                max_bin=None, max_cat_threshold=None,
@@ -22,4 +21,4 @@ Extreme Gradient Boosting,"Pipeline(memory=Memory(location=None),
                                n_estimators=None, n_jobs=-1,
                                num_parallel_tree=None,
                                objective='binary:logistic', ...)]],
-         verbose=False)",0.801,0.8903,0.801,0.8047,0.7992,0.5988,0.6035
+         verbose=False)",0.8697,0.927,0.8697,0.8654,0.8662,0.626,0.629
