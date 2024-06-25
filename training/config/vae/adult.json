@@ -1,0 +1,53 @@
+{
+  "verbose": true,
+  "seed": 42,
+  "experiment_only": true,
+  "use_original_as_test": true,
+  "sampling": {
+    "size": 32560,
+    "test_size": 0.2
+  },
+  "model": {
+    "name": "ctgan",
+    "load": true,
+    "train": false,
+    "save": false
+  },
+  "gan": {
+    "epochs": 10,
+    "cuda": true,
+    "batch_size": 500,
+    "discriminator_dim": [256, 256],
+    "discriminator_lr": 2e-4,
+    "discriminator_decay": 1e-6,
+    "discriminator_steps": 1,
+    "generator_dim": [256, 256],
+    "generator_lr": 2e-4,
+    "generator_decay": 1e-6,
+    "embedding_dim": 128,
+    "log_frequency": true,
+    "pac": 10
+  },
+  "files": {
+    "datasets": {
+      "directory": "../experiments/vae/dataset",
+      "name": "adult",
+      "encoding": "utf-8",
+      "target": "incomeGreaterThan50"
+    },
+    "output": {
+      "directory": "../experiments/vae/generated",
+      "name": "adult"
+    },
+    "model": {
+      "directory": "../experiments/vae/models",
+      "name": "adult_1000_200epochs"
+    },
+    "figures": {
+      "directory": "../experiments/vae/figures_real",
+      "loss_plot": "loss_plot",
+      "confusion_matrix": "confusion_matrix",
+      "experiment_summary": "experiment_summary"
+    }
+  }
+}
